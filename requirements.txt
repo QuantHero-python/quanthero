@@ -1,0 +1,12 @@
+requests
+beautifulsoup4
+seaborn
+plotly
+yfinance==0.2.66
+pandas==2.2.2
+numpy==2.0.2
+schedule
+shioaji==1.3.2
+lxml==6.0.2
+ta-lib-everywhere
+gdown==4.6.0
