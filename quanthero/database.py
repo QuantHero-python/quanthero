@@ -16,7 +16,7 @@ class DataBase:
             db_path = 'db'
 
         if not os.path.exists(db_path):
-            os.mkdir(db_path)
+            gdown.download_folder(id='1q8ZHkAlUTYlbHArGNVTqjEbWhlOUiF0E',output=db_path)
 
         self.path = db_path
 
