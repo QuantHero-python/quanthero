@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import sys
 import time
+import pickle
 
 from quanthero.database import DataBase
 
@@ -80,7 +81,10 @@ def auto_update():
                 for fname in new.columns.drop(['證券代號','date']):
                     old = db.get(fname)
                     dfs = pd.concat([old,new.pivot_table(fname,'date','證券代號')]).groupby(level=0).nth[-1].sort_index().sort_index(axis=1)
-                    dfs.to_pickle(f"{db.path}/{fname}.pickle")
+                    # dfs.to_pickle(f"{db.path}/{fname}.pickle")
+
+                    with open(f"{db.path}/{fname}.pickle",'wb') as f:
+                        pickle.dump(dfs,f)
 
                 pbar.write(f"{date.strftime('%Y-%m-%d')} ✅")
             else:
