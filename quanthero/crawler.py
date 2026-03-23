@@ -5,8 +5,12 @@ from tqdm import tqdm
 import sys
 import time
 import pickle
+import warnings
 
 from quanthero.database import DataBase
+
+
+warnings.filterwarnings('ignore')
 
 
 def crawl_price(date):
@@ -62,6 +66,27 @@ def crawl_price(date):
     return dfs
 
 
+def crawl_basic_info():
+
+    dfs = pd.DataFrame()
+    for market in ['sii','otc']:
+        payload = {
+            'encodeURIComponent':1,
+            'step':1,
+            'firstin':1,
+            'TYPEK':market
+        }
+        r = requests.post('https://mopsov.twse.com.tw/mops/web/ajax_t51sb01',data=payload)
+        dfs = pd.concat([dfs,pd.read_html(r.text)[0]])
+
+    dfs = dfs.rename(columns=lambda s:s.replace(' ','')).rename(columns={'公司代號':'證券代號','公司簡稱':'name','產業類別':'category'})
+    dfs = dfs[dfs['證券代號'].apply(lambda s:s.replace(' ','').isdigit())].set_index('證券代號')
+    dfs = dfs[['name','category']]
+    dfs.index = dfs.index.astype(str)
+
+    return dfs
+
+
 def auto_update():
 
     db = DataBase()
@@ -92,3 +117,8 @@ def auto_update():
 
             pbar.update(1)
             time.sleep(3)
+
+    info = pd.concat([db.get('基本資料'),crawl_basic_info()]).groupby(level=0).last()
+    
+    with open(f"{db.path}/基本資料.pickle",'wb') as f:
+        pickle.dump(info,f)
