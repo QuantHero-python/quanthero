@@ -33,9 +33,9 @@ class Account:
         snapshots = self.api.snapshots(contracts)
 
         info = pd.DataFrame(s.__dict__ for s in contracts).set_index('code')
-        df = pd.DataFrame(s.__dict__ for s in snapshots).set_index('code')
+        df = pd.DataFrame(s.__dict__ for s in snapshots).set_index('code').rename(columns={'ts':'date'})
 
-        df['ts'] = pd.to_datetime(df['ts'])
+        df['date'] = pd.to_datetime(df['date']).apply(lambda s:s.normalize())
         df.insert(0,'name',info['name'])
 
         return df
