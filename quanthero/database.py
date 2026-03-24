@@ -2,6 +2,7 @@ from quanthero import IN_COLAB
 import os
 import pandas as pd
 import gdown
+import requests
 
 
 class DataBase:
@@ -23,3 +24,17 @@ class DataBase:
     def get(self,fname):
 
         return pd.read_pickle(f"{self.path}/{fname}.pickle")
+    
+    def get_klines(self,stock_id):
+
+        parameter = {
+            "dataset": "TaiwanStockPrice",
+            "data_id": stock_id,
+            "start_date": "2000-01-01",
+        }
+        r = requests.get("https://api.finmindtrade.com/api/v4/data",params=parameter)
+        df = pd.DataFrame(r.json()['data']).rename(columns={'max':'high','min':'low','Trading_Volume':'volume'}).set_index('date')
+        df.index = pd.to_datetime(df.index)
+        df = df[['open','high','low','close','volume']]
+
+        return df
