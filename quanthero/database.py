@@ -37,4 +37,6 @@ class DataBase:
         df.index = pd.to_datetime(df.index)
         df = df[['open','high','low','close','volume']]
 
+        df['volume'] /= 1000
+
         return df

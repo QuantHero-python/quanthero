@@ -28,6 +28,9 @@ class Account:
 
     def get_realtime_data(self,stock_ids:list):
 
+        if not isinstance(stock_ids,list):
+            stock_ids = [stock_ids]
+
         contracts = [self.api.Contracts.Stocks[stock_id] for stock_id in stock_ids]
         contracts = [contract for contract in contracts if contract is not None]
         snapshots = self.api.snapshots(contracts)
@@ -37,5 +40,6 @@ class Account:
 
         df['date'] = pd.to_datetime(df['date']).apply(lambda s:s.normalize())
         df.insert(0,'name',info['name'])
+        df = df.drop(columns=['volume','amount']).rename(columns=lambda s:s.replace('total_',''))
 
         return df
