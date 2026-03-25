@@ -28,7 +28,7 @@ class Account:
 
     def get_realtime_data(self,stock_ids:list):
 
-        if not isinstance(stock_ids,list):
+        if not isinstance(stock_ids,(list,pd.Index)):
             stock_ids = [stock_ids]
 
         contracts = [self.api.Contracts.Stocks[stock_id] for stock_id in stock_ids]
